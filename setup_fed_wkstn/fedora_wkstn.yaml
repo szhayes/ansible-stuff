@@ -1,0 +1,107 @@
+---
+- hosts: all
+
+  tasks:
+  - name: Enable SSH Service to restart on reboot
+    systemd:
+      name: sshd
+      state: started
+      enabled: yes
+
+  - name: Install Python3-devel
+    become: yes
+    yum:
+      name: python-devel
+      state: latest
+  - name: Install Python psutil
+    pip:
+      name: psutil
+      executable: pip3
+    ignore_errors: yes
+
+  - name: Remove Packages 
+    become: yes
+    package:
+      name: "{{ item }}" 
+      state: absent
+    with_items:
+    - rhythmbox
+    - shotwell
+  - name: Install Packages
+    become: yes
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+    - gnome-builder
+    - gnome-music
+#    - guvcview
+   
+  - name: RPMFusion
+    become: yes
+    dnf:
+      name: [
+        "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-33.noarch.rpm",
+        "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-33.noarch.rpm"
+      ]
+      state: present
+      disable_gpg_check: yes
+    
+  - name: Enable COPR Repo for MS fonts
+    become: yes
+    command:
+        cmd: dnf copr enable -y dawid/better_fonts
+        creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:dawid:better_fonts.repo
+  - name: Install MS Fonts
+    become: yes
+    dnf:
+      name: [ "fontconfig-enhanced-defaults",
+              "fontconfig-font-replacements" ]
+      state: present
+
+  - name: Install Gnome Extensions App
+    become: yes
+    dnf:
+      name: ["gnome-extensions-app", "gnome-tweaks"]
+      state: present
+
+  - name: Remove Spotify Package
+    become: yes
+    dnf:
+      name: lpf-spotify-client
+      state: absent
+      
+  - name: Enable Night Light
+    dconf:
+      key: /org/gnome/settings-daemon/plugins/color/night-light-enabled
+      value: "'True'"
+      state: present
+  - name: Set Night Light Temperature
+    dconf:
+      key: /org/gnome/settings-daemon/plugins/color/night-light-temperature
+      value: 5500
+
+  - name: Enable Flathub repository
+    become: yes
+    command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+  - name: Set Location Entry in Nautlius
+    command: gsettings set org.gnome.nautilus.preferences always-use-location-entry true
+  
+  - name: Update Codecs
+    become: yes
+    command: dnf groupupdate --assumeyes Multimedia
+
+  - name: Update PulseAudio
+    become: yes
+    blockinfile:
+      path: /etc/pulse/default.pa
+      block: |
+        .ifexists module-echo-cancel.so
+        load-module module-echo-cancel aec_method=webrtc source_name=echocancel sink_name=echocancel1
+        set-default-source echocancel
+        set-default-sink echocancel1
+        .endif
+
+  - name: restart PulseAudio
+    command: pulseaudio -k
