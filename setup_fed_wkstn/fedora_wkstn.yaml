@@ -10,7 +10,7 @@
 
   - name: Install Python3-devel
     become: yes
-    yum:
+    dnf:
       name: python-devel
       state: latest
   - name: Install Python psutil
