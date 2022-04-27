@@ -1,6 +1,6 @@
 # Problem Solving a New Automation
 
-You are in the middle of a cloud migration and you have to enable an existing account on 400+ servers as quickly as possible.   You don't want to create the account on a server if it is not already there but just enable an existing, disabled account for a period of six months.   You know Ansible has a module for this.  So a quick trip to your favourite editor, a couple of Google searches later, you have an approach.
+You are in the middle of a cloud migration and you have to enable an existing account on 400+ servers as quickly as possible.   You don't want to create the account on a server if it is not already there but just enable an existing, disabled account for a period of six months.   You know Ansible has a module for this.  So a quick trip to our favourite editor, a couple of Google searches later, we have an idea to start with.
 
 Let's write some code! To start our development we are going to write our code and test against our localhost.
 
