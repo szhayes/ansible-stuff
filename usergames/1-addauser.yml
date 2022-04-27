@@ -1,0 +1,11 @@
+---
+- name: add a user
+  hosts: localhost
+  gather_facts: false
+  become: yes
+
+  tasks:
+  - name: Add a user with no expiry
+    user:
+      name: pentest
+      expires: -1

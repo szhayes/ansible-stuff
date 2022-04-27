@@ -1,0 +1,25 @@
+---
+- name: update users
+  hosts: all
+  gather_facts: false
+  become: yes
+
+  vars:
+    s_user: 'pentest'
+    s_expires: "{{ lookup('pipe','date +%s -d now+6months') }}"
+
+  tasks:
+  - name: GETENT {{s_user}} info
+    getent:
+      database: passwd
+      key: "{{ s_user }}"
+    ignore_errors: yes
+
+  - name: Change expiry date for user to today + 6 months
+    user:
+      name: "{{ s_user }}"
+      # expires: -1
+      expires: "{{ s_expires }}"
+    when: ansible_facts.getent_passwd["{{s_user}}"] is defined
+
+      
