@@ -254,7 +254,7 @@ The user task only updates the user when the getent_passwd variable for our user
 
 So what was our approach to success:
 
-1. Define our problem, know what we want to acheive and all the characteristics we could think of to be successul.
+1. Define our problem, know what we want to achieve and all the characteristics we could think of to be successul.
 2. Solve one issue at a time.  Be iterative, eat the elephant one bite at a time.
 3. You will encounter issues along the way that will take you will not forsee.
 4. Keep checking against our criteria did we acheive success.
